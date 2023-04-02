@@ -1,40 +1,27 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"log"
 	"net/http"
 )
 
-type Article struct {
-	Title   string `json:"Title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
+var MockArticlesData = []*Article{
+	{Title: "Hello", Desc: "Article Description1", Content: "Article Content1"},
+	{Title: "Hello 2", Desc: "Article Description2", Content: "Article Content2"},
 }
 
-var Articles []Article
+type ArticleServiceRPC struct{}
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to the homepage")
-	fmt.Println("Hit: homePage")
+func (s *ArticleServiceRPC) Ping(ctx context.Context) (bool, error) {
+	return true, nil
 }
 
-func handleRequests() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/articles", getAllArticles)
-	log.Fatal(http.ListenAndServe(":3000", nil))
-}
-
-func getAllArticles(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hit: returnAllArticles")
-	json.NewEncoder(w).Encode(Articles)
+func (s *ArticleServiceRPC) GetAllArticles(ctx context.Context) ([]*Article, error) {
+	return MockArticlesData, nil
 }
 
 func main() {
-	Articles = []Article{
-		{Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-		{Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
-	}
-	handleRequests()
+	webrpcHandler := NewArticleServiceServer(&ArticleServiceRPC{})
+	log.Fatal(http.ListenAndServe(":3000", webrpcHandler))
 }

@@ -1,0 +1,16 @@
+webrpc = v1
+
+name = ArticlesApp
+version = v0.1.0
+
+struct Article
+	- Title: string
+	- Desc: string
+	- Content: string
+
+service ArticleService
+  - Ping() => (status: bool)
+  - GetAllArticles() => (articles: []Article)
+
+error 100 RateLimited     "too many requests"   HTTP 429
+error 101 DatabaseDown    "service outage"      HTTP 503
