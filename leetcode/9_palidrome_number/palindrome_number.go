@@ -11,15 +11,11 @@ func isPalindromeBrute(x int) bool {
 	}
 
 	xStr := fmt.Sprint(x)
-	i, j := 0, len(xStr)-1
 
-	for i < j {
+	for i, j := 0, len(xStr)-1; i < j; i, j = i+1, j-1 {
 		if xStr[i] != xStr[j] {
 			return false
 		}
-
-		i++
-		j--
 	}
 	return true
 }
