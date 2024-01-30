@@ -18,8 +18,8 @@ type Solution struct {
 
 func TestWordBreak(t *testing.T) {
 	for _, sol := range []Solution{
-		// {"wordBreakRegex", wordBreakRegex},
-		// {"wordBreakDP", wordBreakDP},
+		{"wordBreakRegex", wordBreakRegex},
+		{"wordBreakDP", wordBreakDP},
 		{"wordBreakFiniteAutomata", wordBreakFiniteAutomata},
 	} {
 		for _, tt := range []Test{

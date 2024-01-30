@@ -20,9 +20,9 @@ func wordBreakDP(target string, words []string) bool {
 
 	var wordBreakRec func(string) bool
 	wordBreakRec = func(remaining string) bool {
-		res, ok := memo[remaining]
+		res, cached := memo[remaining]
 		switch {
-		case ok:
+		case cached:
 			return res
 		case len(remaining) == 0:
 			return true
@@ -41,69 +41,56 @@ func wordBreakDP(target string, words []string) bool {
 	return wordBreakRec(target)
 }
 
-func printTrie(node *Node, word string) {
-	for char, childNode := range *node {
-		if char == "S" {
-			fmt.Printf("%s\n----------\n", word)
-		} else if childNode != nil {
-			printTrie(childNode, word+string(char))
-		}
-	}
-}
-
-type Node map[string]*Node
-
-type Key struct {
-	targetIdx int
-	node      *Node
-}
-
-func buildTrie(words []string) *Node {
-	start := &Node{}
-	end := &Node{}
-
-	for _, word := range words {
-		curr := start
-		for i := 0; i < len(word); i++ {
-			char := string(word[i])
-			if (*curr)[char] == nil {
-				(*curr)[char] = &Node{}
-			}
-			curr = (*curr)[char]
-		}
-		(*curr)["S"] = start // Points back to the start
-		(*curr)["E"] = end   // Points to the end node
-	}
-
-	return start
-}
-
 func wordBreakFiniteAutomata(target string, words []string) bool {
-	start := buildTrie(words)
+	// strings print better than runes for debugging
+	type Node map[string]*Node
+	type Key struct {
+		targetIdx int
+		node      *Node
+	}
+
+	buildTrie := func() *Node {
+		start := &Node{}
+
+		for _, word := range words {
+			curr := start
+			for i := 0; i < len(word); i++ {
+				char := string(word[i])
+				if (*curr)[char] == nil {
+					(*curr)[char] = &Node{}
+				}
+				curr = (*curr)[char]
+			}
+			(*curr)["S"] = start
+			(*curr)["E"] = &Node{}
+		}
+
+		return start
+	}
 
 	memo := map[Key]bool{}
 	var wordBreakRec func(int, *Node) bool
 	wordBreakRec = func(currIdx int, curr *Node) bool {
 		key := Key{currIdx, curr}
-		if curr == nil {
+		switch cacheRes, cached := memo[key]; {
+		case cached:
+			return cacheRes
+		case curr == nil:
 			return false
-		} else if cachedRes, cached := memo[key]; cached {
-			return cachedRes
-		} else if currIdx == len(target) && (*curr)["E"] != nil {
+		case currIdx == len(target) && (*curr)["E"] != nil:
 			return true
-		} else if currIdx == len(target) {
+		case currIdx == len(target):
 			return false
 		}
 
 		char := string(target[currIdx])
 		memo[key] = wordBreakRec(currIdx, (*curr)["S"]) || wordBreakRec(currIdx+1, (*curr)[char])
+
 		return memo[key]
 	}
 
+	start := buildTrie()
 	return wordBreakRec(0, start)
 }
 
-func main() {
-	fmt.Println(wordBreakDP("applepenapple", []string{"apple", "pen"}))
-	fmt.Println(wordBreakDP("catsandog", []string{"cats", "dog", "sand", "and", "cat"}))
-}
+func main() {}
