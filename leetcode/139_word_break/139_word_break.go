@@ -54,8 +54,8 @@ func wordBreakFiniteAutomata(target string, words []string) bool {
 
 		for _, word := range words {
 			curr := start
-			for i := 0; i < len(word); i++ {
-				char := string(word[i])
+			for _, rune := range word {
+				char := string(rune)
 				if (*curr)[char] == nil {
 					(*curr)[char] = &Node{}
 				}
