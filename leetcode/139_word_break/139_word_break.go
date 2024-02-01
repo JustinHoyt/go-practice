@@ -50,7 +50,7 @@ func wordBreakFiniteAutomata(target string, words []string) bool {
 	}
 
 	buildTrie := func() *Node {
-		start := &Node{}
+		start, end := &Node{}, &Node{}
 
 		for _, word := range words {
 			curr := start
@@ -62,7 +62,7 @@ func wordBreakFiniteAutomata(target string, words []string) bool {
 				curr = (*curr)[char]
 			}
 			(*curr)["S"] = start
-			(*curr)["E"] = &Node{}
+			(*curr)["E"] = end
 		}
 
 		return start
@@ -85,6 +85,63 @@ func wordBreakFiniteAutomata(target string, words []string) bool {
 
 		char := string(target[currIdx])
 		memo[key] = wordBreakRec(currIdx, (*curr)["S"]) || wordBreakRec(currIdx+1, (*curr)[char])
+
+		return memo[key]
+	}
+
+	start := buildTrie()
+	return wordBreakRec(0, start)
+}
+
+func wordBreakGraph(target string, words []string) bool {
+	// strings print better than runes for debugging
+	type Node struct {
+		adj map[string]*Node
+	}
+	type Key struct {
+		targetIdx int
+		node      *Node
+	}
+	makeNode := func() *Node {
+		return &Node{make(map[string]*Node)}
+	}
+
+	buildTrie := func() *Node {
+		start, end := makeNode(), makeNode()
+
+		for _, word := range words {
+			curr := start
+			for _, rune := range word {
+				char := string(rune)
+				if _, ok := curr.adj[char]; !ok {
+					curr.adj[char] = makeNode()
+				}
+				curr = curr.adj[char]
+			}
+			curr.adj["S"] = start
+			curr.adj["E"] = end
+		}
+
+		return start
+	}
+
+	memo := map[Key]bool{}
+	var wordBreakRec func(int, *Node) bool
+	wordBreakRec = func(currIdx int, curr *Node) bool {
+		key := Key{currIdx, curr}
+		switch cachedVal, cached := memo[key]; {
+		case cached:
+			return cachedVal
+		case curr == nil:
+			return false
+		case currIdx == len(target) && curr.adj["E"] != nil:
+			return true
+		case currIdx == len(target):
+			return false
+		}
+
+		char := string(target[currIdx])
+		memo[key] = wordBreakRec(currIdx, curr.adj["S"]) || wordBreakRec(currIdx+1, curr.adj[char])
 
 		return memo[key]
 	}

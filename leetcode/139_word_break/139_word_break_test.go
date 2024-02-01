@@ -21,6 +21,7 @@ func TestWordBreak(t *testing.T) {
 		{"wordBreakRegex", wordBreakRegex},
 		{"wordBreakDP", wordBreakDP},
 		{"wordBreakFiniteAutomata", wordBreakFiniteAutomata},
+		{"wordBreakGraph", wordBreakGraph},
 	} {
 		for _, tt := range []Test{
 			{
