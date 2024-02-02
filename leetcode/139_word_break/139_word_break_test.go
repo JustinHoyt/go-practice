@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -67,17 +68,13 @@ func TestWordBreak(t *testing.T) {
 				words: []string{"go", "goal", "goals", "special"},
 			},
 		} {
-			got := sol.fn(tt.str, tt.words)
+			t.Run(fmt.Sprint(sol.name, tt.name), func(t *testing.T) {
+				got := sol.fn(tt.str, tt.words)
 
-			if got != tt.want {
-				t.Errorf("%s(\n\t%s, \n\t%#v\n) \nWanted: %t\nGot: %t",
-					sol.name,
-					tt.str,
-					tt.words,
-					tt.want,
-					got,
-				)
-			}
+				if got != tt.want {
+					t.Errorf("\nWanted: %t\nGot: %t", tt.want, got)
+				}
+			})
 		}
 	}
 }
