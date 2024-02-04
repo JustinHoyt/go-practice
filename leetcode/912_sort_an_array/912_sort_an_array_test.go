@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"sort"
+	"slices"
 	"testing"
 )
 
@@ -24,12 +24,9 @@ func TestSortAnArray(t *testing.T) {
 			{"duplicate nums", []int{12, 9, 48, 48, 48, 7, 6, 89}},
 		} {
 			t.Run(fmt.Sprintf("%s  %s", sol.name, tt.name), func(t *testing.T) {
-				got := make([]int, len(tt.input))
-				want := make([]int, len(tt.input))
-				copy(got, tt.input)
-				copy(want, tt.input)
-				got = sol.fn(tt.input)
-				sort.Ints(want)
+				want := append([]int{}, tt.input...)
+				slices.Sort(want)
+				got := sol.fn(tt.input)
 
 				if !reflect.DeepEqual(got, want) {
 					t.Errorf("\ninput:\t%+v\ngot:\t%+v\nwant\t%+v", tt.input, got, want)

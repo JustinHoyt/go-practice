@@ -13,8 +13,7 @@ func main() {
 	// [1]
 	ll.PushBack(2)
 	// [1, 2]
-	ll.Remove(ll.Front())
+	var val int = ll.Remove(ll.Front()).(int)
 	// [2]
-
-	fmt.Fprintf(os.Stderr, "DEBUGPRINT[1]: queue.go:10: ll=%+v\n", ll.Front())
+	fmt.Fprintf(os.Stderr, "DEBUGPRINT[7]: queue.go:16: val=%+v\n", val)
 }
