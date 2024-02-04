@@ -5,33 +5,34 @@ package main
 [2,1,3,0,4]
 .....M..............
 */
-func mergeSort(nums []int) []int {
+func mergeSort(nums []int) (res []int) {
 	if len(nums) < 2 {
 		return nums
 	}
 
-	midIdx := len(nums) / 2
-	left := mergeSort(nums[midIdx:])
-	right := mergeSort(nums[:midIdx])
+	m := len(nums) / 2
+	left := mergeSort(nums[m:])
+	right := mergeSort(nums[:m])
 
-	temp := []int{}
-	leftIdx, rightIdx := 0, 0
-	for leftIdx < len(left) && rightIdx < len(right) {
-		if left[leftIdx] < right[rightIdx] {
-			temp = append(temp, left[leftIdx])
-			leftIdx++
-		} else {
-			temp = append(temp, right[rightIdx])
-			rightIdx++
+	l, r := 0, 0
+	for l < len(left) || r < len(right) {
+		switch {
+		case l == len(left):
+			res = append(res, right[r:]...)
+			r = len(right)
+		case r == len(right):
+			res = append(res, left[l:]...)
+			l = len(left)
+		case left[l] < right[r]:
+			res = append(res, left[l])
+			l++
+		case right[r] <= left[l]:
+			res = append(res, right[r])
+			r++
 		}
 	}
-	if leftIdx < len(left) {
-		temp = append(temp, left[leftIdx:]...)
-	} else {
-		temp = append(temp, right[rightIdx:]...)
-	}
 
-	return temp
+	return res
 }
 
 func main() {}

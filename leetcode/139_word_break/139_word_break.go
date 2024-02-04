@@ -127,23 +127,24 @@ func wordBreakGraph(target string, words []string) bool {
 
 	memo := map[Key]bool{}
 	var wordBreakRec func(int, *Node) bool
-	wordBreakRec = func(currIdx int, curr *Node) bool {
+	wordBreakRec = func(currIdx int, curr *Node) (isValid bool) {
 		key := Key{currIdx, curr}
 		switch cachedVal, cached := memo[key]; {
 		case cached:
-			return cachedVal
+			isValid = cachedVal
 		case curr == nil:
-			return false
+			isValid = false
 		case currIdx == len(target) && curr.adj["E"] != nil:
-			return true
+			isValid = true
 		case currIdx == len(target):
-			return false
+			isValid = false
+		default:
+			char := string(target[currIdx])
+			isValid = wordBreakRec(currIdx, curr.adj["S"]) || wordBreakRec(currIdx+1, curr.adj[char])
 		}
 
-		char := string(target[currIdx])
-		memo[key] = wordBreakRec(currIdx, curr.adj["S"]) || wordBreakRec(currIdx+1, curr.adj[char])
-
-		return memo[key]
+		memo[key] = isValid
+		return isValid
 	}
 
 	start := buildTrie()
