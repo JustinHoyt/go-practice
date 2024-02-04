@@ -9,34 +9,37 @@ package main
 */
 func searchRange(nums []int, target int) []int {
 	var searchRec func([]int, string) (int, bool)
-	searchRec = func(slice []int, dir string) (res int, ok bool) {
-		m := len(slice) / 2 // midpoint index
+	searchRec = func(slice []int, dir string) (targetIdx int, ok bool) {
+		midIdx := len(slice) / 2
+
 		switch {
-		// Base cases
+		// Base case
 		case len(slice) == 1:
-			return 0, target == slice[m]
+			targetIdx, ok = 0, target == slice[midIdx]
 
 		// Found
-		case target == slice[m] && dir == "left":
-			if res, ok := searchRec(slice[:m], dir); ok {
-				return res, true
+		case target == slice[midIdx] && dir == "left":
+			if targetIdx, ok = searchRec(slice[:midIdx], dir); !ok {
+				targetIdx, ok = midIdx, true
 			}
-			return m, true
-		case target == slice[m] && dir == "right":
-			if res, ok = searchRec(slice[m:], dir); ok {
-				return res + m, true
+		case target == slice[midIdx] && dir == "right":
+			targetIdx, ok = searchRec(slice[midIdx:], dir)
+			targetIdx += midIdx
+			if !ok {
+				targetIdx, ok = midIdx, true
 			}
-			return m, true
 
 		// Search left
-		case target < slice[m]:
-			return searchRec(slice[:m], dir)
+		case target < slice[midIdx]:
+			targetIdx, ok = searchRec(slice[:midIdx], dir)
 
 		// Search right
-		default: // case target > slice[m]:
-			res, ok := searchRec(slice[m:], dir)
-			return res + m, ok // Add m to calculate offset from slice
+		case target > slice[midIdx]:
+			targetIdx, ok = searchRec(slice[midIdx:], dir)
+			targetIdx += midIdx
 		}
+
+		return targetIdx, ok
 	}
 
 	if len(nums) == 0 {
