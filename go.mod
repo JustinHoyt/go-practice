@@ -1,6 +1,6 @@
 module main
 
-go 1.21
+go 1.22
 
 require github.com/k0kubun/pp v3.0.1+incompatible
 
