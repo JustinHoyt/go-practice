@@ -13,7 +13,7 @@ func TestSortAnArray(t *testing.T) {
 		fn   func([]int)
 	}{
 		{"moveZeroes", moveZeroes},
-		{"moveZeroesIter", moveZeroesIter},
+		{"moveZeroesBrute", moveZeroesBrute},
 	} {
 		for _, tt := range []struct {
 			name  string
